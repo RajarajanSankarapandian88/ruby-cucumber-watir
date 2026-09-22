@@ -1,0 +1,11 @@
+/.bundle/
+/.certs/
+/vendor/bundle/
+/node_modules/
+/tools/chromedriver-win64/
+/tools/chrome-version.txt
+/allure-results/
+/allure-report/
+/artifacts/
+*.log
+*.png

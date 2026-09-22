@@ -1,0 +1,14 @@
+{
+  "name": "watir-cucumber-allure",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Allure Report CLI for the Ruby Watir/Cucumber automation framework",
+  "devDependencies": {
+    "allure": "3.18.0"
+  },
+  "scripts": {
+    "report:generate": "allure generate allure-results --output allure-report",
+    "report:open": "allure open allure-report",
+    "report:watch": "allure watch allure-results"
+  }
+}
