@@ -4,6 +4,7 @@ Feature: Discover current AI trends in test automation
   I want to search the web for current AI trends
   So that I can identify relevant developments and resources
 
+  @external @ui
   Scenario: Search for the latest AI trends in test automation
     Given I open the search engine
     When I search for the latest AI test automation trends

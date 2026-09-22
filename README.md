@@ -44,6 +44,10 @@ The test runs headlessly in Chrome by default. To watch the browser or use Edge:
 .\scripts\run-ai-trends.ps1 -Browser edge -Headless $false
 ```
 
+The AI-trends scenario is tagged `@external`: it intentionally exercises live
+Bing markup and is run only by `run-ai-trends.ps1`. The normal Cucumber
+profiles exclude it so a CI suite can remain deterministic.
+
 Outputs:
 
 - `artifacts/ai_trends.txt` and `artifacts/ai_trends.json`: captured search results
@@ -65,3 +69,10 @@ The following environment variables can be used directly when invoking Cucumber:
 - `TEST_ENV`: environment name shown in Allure
 
 On Windows, `setup.ps1` downloads the official Chrome-for-Testing driver matching the installed Chrome build and configures Watir to use it. This avoids proxy-related Selenium Manager lookups. Edge continues to use Selenium Manager.
+
+## Project wiki
+
+The reviewable source for the project wiki lives in [`docs/wiki`](docs/wiki/Home.md).
+It covers architecture, running the suite, security, and troubleshooting. GitHub
+wikis are separate repositories, so these pages are versioned and reviewed in
+the code PR before being published to the repository wiki.

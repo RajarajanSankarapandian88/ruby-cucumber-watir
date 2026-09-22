@@ -29,7 +29,7 @@ class SearchPage
 
       title = link.text.strip
       url = direct_url(link.attribute_value("href"))
-      next if title.empty? || url.to_s.empty?
+      next if title.empty? || !http_url?(url)
 
       { title: title, url: url }
     end
@@ -63,8 +63,15 @@ class SearchPage
     payload = encoded.delete_prefix("a1")
     payload += "=" * ((4 - payload.length % 4) % 4)
     decoded = Base64.urlsafe_decode64(payload)
-    decoded.start_with?("http") ? decoded : url
+    http_url?(decoded) ? decoded : url
   rescue ArgumentError, URI::InvalidURIError
     url
+  end
+
+  def http_url?(url)
+    uri = URI.parse(url.to_s)
+    %w[http https].include?(uri.scheme) && !uri.host.to_s.empty?
+  rescue URI::InvalidURIError
+    false
   end
 end

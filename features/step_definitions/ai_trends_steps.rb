@@ -27,7 +27,8 @@ end
 Then("I save the AI trend search results") do
   FileUtils.mkdir_p("artifacts")
   timestamp = Time.now.utc.strftime("%Y-%m-%d %H:%M:%S UTC")
-  lines = ["AI test automation trends", "Search: #{@query}", "Captured: #{timestamp}", ""]
+  source = "https://www.bing.com/search"
+  lines = ["AI test automation trends", "Search: #{@query}", "Source: #{source}", "Captured: #{timestamp}", ""]
   search_results.each_with_index do |result, index|
     lines << "#{index + 1}. #{result[:title]}"
     lines << "   #{result[:url]}"
@@ -35,7 +36,8 @@ Then("I save the AI trend search results") do
 
   output = lines.join("\n")
   File.write("artifacts/ai_trends.txt", output)
-  File.write("artifacts/ai_trends.json", JSON.pretty_generate(search_results))
+  payload = { query: @query, source: source, captured_at: timestamp, results: search_results }
+  File.write("artifacts/ai_trends.json", JSON.pretty_generate(payload))
   attach(output, "text/plain", "AI trend search results")
-  attach(JSON.pretty_generate(search_results), "application/json", "AI trend search results (JSON)")
+  attach(JSON.pretty_generate(payload), "application/json", "AI trend search results (JSON)")
 end

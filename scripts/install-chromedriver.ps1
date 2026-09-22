@@ -39,12 +39,27 @@ $DriverDownload = $VersionEntry.downloads.chromedriver |
   Where-Object { $_.platform -eq "win64" } |
   Select-Object -First 1
 if (-not $DriverDownload) { throw "No Windows x64 ChromeDriver found for Chrome $ChromeVersion." }
+$DriverUri = [Uri]$DriverDownload.url
+if ($DriverUri.Scheme -ne "https" -or $DriverUri.Host -ne "storage.googleapis.com") {
+  throw "ChromeDriver download URL is not the expected official HTTPS host."
+}
 
 New-Item -ItemType Directory -Path $ToolsDirectory -Force | Out-Null
 $ArchivePath = Join-Path $ToolsDirectory "chromedriver-win64.zip"
-Invoke-WebRequest -Uri $DriverDownload.url -OutFile $ArchivePath
-Expand-Archive -LiteralPath $ArchivePath -DestinationPath $ToolsDirectory -Force
-Remove-Item -LiteralPath $ArchivePath
+try {
+  Invoke-WebRequest -Uri $DriverDownload.url -OutFile $ArchivePath
+  Expand-Archive -LiteralPath $ArchivePath -DestinationPath $ToolsDirectory -Force
+
+  $Signature = Get-AuthenticodeSignature -FilePath $DriverPath
+  if ($Signature.Status -ne "Valid" -or $Signature.SignerCertificate.Subject -notmatch "Google LLC") {
+    throw "Downloaded ChromeDriver did not have a valid Google LLC code-signing signature."
+  }
+}
+finally {
+  if (Test-Path -LiteralPath $ArchivePath) {
+    Remove-Item -LiteralPath $ArchivePath -Force
+  }
+}
 Set-Content -LiteralPath $VersionFile -Value $ChromeVersion
 
 Write-Host "Installed ChromeDriver $($VersionEntry.version) for Chrome $ChromeVersion"
