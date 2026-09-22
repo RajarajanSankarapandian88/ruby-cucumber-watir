@@ -1,2 +1,3 @@
-default: --publish-quiet --format pretty
-allure: --publish-quiet --format pretty --format AllureCucumber::CucumberFormatter --out allure-results
+default: --publish-quiet --format pretty --tags "not @external"
+allure: --publish-quiet --format pretty --format AllureCucumber::CucumberFormatter --out allure-results --tags "not @external"
+external: --publish-quiet --format pretty --format AllureCucumber::CucumberFormatter --out allure-results --tags "@external"

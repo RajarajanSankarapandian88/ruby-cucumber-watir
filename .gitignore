@@ -4,6 +4,7 @@
 /node_modules/
 /tools/chromedriver-win64/
 /tools/chrome-version.txt
+/tools/*.zip
 /allure-results/
 /allure-report/
 /artifacts/

@@ -8,7 +8,9 @@ require_relative "../pages/search_page"
 
 AllureCucumber.configure do |config|
   config.results_directory = "allure-results"
-  config.clean_results_directory = true
+  # Runner-managed executions prepare results once before workers start.
+  # Direct serial Cucumber runs retain formatter cleanup to avoid stale reports.
+  config.clean_results_directory = !ENV.fetch("ALLURE_RESULTS_PREPARED", "false").casecmp?("true")
   config.environment = ENV.fetch("TEST_ENV", "local")
   config.environment_properties = {
     browser: ENV.fetch("BROWSER", "chrome"),
@@ -19,10 +21,17 @@ AllureCucumber.configure do |config|
 end
 
 module BrowserWorld
+  SUPPORTED_BROWSERS = %i[chrome edge].freeze
+
   attr_reader :browser, :search_page, :search_results
 
   def start_browser
-    browser_name = ENV.fetch("BROWSER", "chrome").to_sym
+    browser_name = ENV.fetch("BROWSER", "chrome").downcase.to_sym
+    unless SUPPORTED_BROWSERS.include?(browser_name)
+      raise ArgumentError,
+            "Unsupported BROWSER=#{browser_name.inspect}. Supported browsers: #{SUPPORTED_BROWSERS.join(", ")}."
+    end
+
     headless = ENV.fetch("HEADLESS", "true").casecmp?("true")
     arguments = ["--window-size=1440,1000", "--disable-search-engine-choice-screen"]
     arguments.concat(["--headless=new", "--disable-gpu"]) if headless
@@ -43,11 +52,7 @@ end
 
 World(BrowserWorld)
 
-Before do
-  start_browser
-end
-
-After do |scenario|
+After("@ui") do |scenario|
   if scenario.failed? && @browser&.exists?
     FileUtils.mkdir_p("artifacts/screenshots")
     name = scenario.name.gsub(/[^0-9A-Za-z]+/, "_").downcase
@@ -57,4 +62,8 @@ After do |scenario|
   end
 ensure
   @browser&.quit
+end
+
+Before("@ui") do
+  start_browser
 end

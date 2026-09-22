@@ -36,8 +36,8 @@ $env:SSL_CERT_FILE = $CertificateBundle
 & bundle install
 if ($LASTEXITCODE -ne 0) { throw "bundle install failed with exit code $LASTEXITCODE" }
 
-& npm install
-if ($LASTEXITCODE -ne 0) { throw "npm install failed with exit code $LASTEXITCODE" }
+& npm ci --include=dev
+if ($LASTEXITCODE -ne 0) { throw "npm ci failed with exit code $LASTEXITCODE" }
 
 & "$PSScriptRoot\install-chromedriver.ps1"
 
