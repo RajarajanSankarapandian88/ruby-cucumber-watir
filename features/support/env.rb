@@ -8,9 +8,9 @@ require_relative "../pages/search_page"
 
 AllureCucumber.configure do |config|
   config.results_directory = "allure-results"
-  # Results are cleaned once by the run script, not by each Cucumber process.
-  # This keeps a shared results directory safe when the suite is parallelized.
-  config.clean_results_directory = false
+  # Runner-managed executions prepare results once before workers start.
+  # Direct serial Cucumber runs retain formatter cleanup to avoid stale reports.
+  config.clean_results_directory = !ENV.fetch("ALLURE_RESULTS_PREPARED", "false").casecmp?("true")
   config.environment = ENV.fetch("TEST_ENV", "local")
   config.environment_properties = {
     browser: ENV.fetch("BROWSER", "chrome"),

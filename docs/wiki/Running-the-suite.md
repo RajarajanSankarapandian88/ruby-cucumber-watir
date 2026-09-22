@@ -37,7 +37,8 @@ Generate the report without opening it:
 `default` and `allure` exclude `@external` tests. `external` is the only
 profile that includes live search tests. This keeps ordinary CI runs isolated
 from search-engine changes and network controls. Invoke Allure profiles through
-`run-cucumber.ps1`, which removes stale results once before Cucumber begins.
+`run-cucumber.ps1` for parallel execution; it removes stale results once before
+Cucumber begins. Direct serial profile execution also cleans stale results.
 
 ## Outputs
 

@@ -31,6 +31,7 @@ execute without a driver.
 
 ## Parallel execution
 
-Allure cleanup occurs in `run-cucumber.ps1` rather than Cucumber hooks.
-Workers append results to the same directory; do not reintroduce per-worker
-cleanup when adding parallel execution.
+`run-cucumber.ps1` performs Allure cleanup before setting
+`ALLURE_RESULTS_PREPARED=true`, so workers append to the same directory. Direct
+serial Cucumber execution retains formatter cleanup to avoid stale reports; use
+the runner for parallel execution and do not reintroduce per-worker cleanup.

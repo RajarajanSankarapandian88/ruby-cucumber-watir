@@ -18,6 +18,7 @@ if (Test-Path -LiteralPath $AllureResults) {
   Remove-Item -LiteralPath $AllureResults -Recurse -Force
 }
 New-Item -ItemType Directory -Path $AllureResults -Force | Out-Null
+$env:ALLURE_RESULTS_PREPARED = "true"
 
 & bundle exec cucumber --profile $Profile @FeaturePath
 if ($LASTEXITCODE -ne 0) {
