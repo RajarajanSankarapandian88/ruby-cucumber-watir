@@ -18,6 +18,12 @@ Run the explicit live integration scenario:
 .\scripts\run-ai-trends.ps1
 ```
 
+Run a normal Allure-profile suite through the same run-level cleanup boundary:
+
+```powershell
+.\scripts\run-cucumber.ps1 -Profile allure
+```
+
 Use `-Headless $false` to watch Chrome, or `-Browser edge` to use Edge.
 
 Generate the report without opening it:
@@ -30,7 +36,8 @@ Generate the report without opening it:
 
 `default` and `allure` exclude `@external` tests. `external` is the only
 profile that includes live search tests. This keeps ordinary CI runs isolated
-from search-engine changes and network controls.
+from search-engine changes and network controls. Invoke Allure profiles through
+`run-cucumber.ps1`, which removes stale results once before Cucumber begins.
 
 ## Outputs
 

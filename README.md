@@ -37,6 +37,13 @@ From PowerShell in this directory:
 .\scripts\open-allure-report.ps1
 ```
 
+For regular Allure-profile execution, use the runner so results are cleaned
+once before Cucumber starts:
+
+```powershell
+.\scripts\run-cucumber.ps1 -Profile allure
+```
+
 The test runs headlessly in Chrome by default. To watch the browser or use Edge:
 
 ```powershell
@@ -46,7 +53,9 @@ The test runs headlessly in Chrome by default. To watch the browser or use Edge:
 
 The AI-trends scenario is tagged `@external`: it intentionally exercises live
 Bing markup and is run only by `run-ai-trends.ps1`. The normal Cucumber
-profiles exclude it so a CI suite can remain deterministic.
+profiles exclude it so a CI suite can remain deterministic. Use the PowerShell
+runners for Allure profiles rather than invoking those profiles directly; they
+perform the required single run-level results cleanup.
 
 Outputs:
 

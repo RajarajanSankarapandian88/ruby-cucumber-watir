@@ -3,7 +3,7 @@
 The framework treats browsers, drivers, dependencies, and external search as
 separate trust boundaries.
 
-- Lock Ruby and Node dependencies. Run `bundle install` and `npm ci`; review
+- Lock Ruby and Node dependencies. Run `bundle install` and `npm ci --include=dev`; review
   lockfile changes in pull requests.
 - The driver bootstrap accepts only the official Chrome for Testing HTTPS host
   and verifies the extracted executable's Google LLC signature.

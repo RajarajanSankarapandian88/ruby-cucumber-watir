@@ -2,10 +2,12 @@
 
 ## Execution flow
 
-`run-ai-trends.ps1` prepares the browser environment, clears Allure results
-once for the entire run, and starts Cucumber with the `external` profile. The
-Cucumber formatter writes raw results to `allure-results`; the report script
-turns them into an HTML report using the project-local Allure CLI.
+`run-cucumber.ps1` clears Allure results once for the entire run and starts
+Cucumber with either the `allure` or `external` profile. `run-ai-trends.ps1`
+prepares the browser environment and delegates to that runner with the
+`external` profile. The Cucumber formatter writes raw results to
+`allure-results`; the report script turns them into an HTML report using the
+project-local Allure CLI.
 
 ```text
 PowerShell runner -> Cucumber -> Watir/Selenium -> Bing
@@ -29,6 +31,6 @@ execute without a driver.
 
 ## Parallel execution
 
-Allure cleanup occurs in the PowerShell runner rather than Cucumber hooks.
+Allure cleanup occurs in `run-cucumber.ps1` rather than Cucumber hooks.
 Workers append results to the same directory; do not reintroduce per-worker
 cleanup when adding parallel execution.

@@ -16,11 +16,32 @@ $DriverDirectory = Join-Path $ToolsDirectory "chromedriver-win64"
 $DriverPath = Join-Path $DriverDirectory "chromedriver.exe"
 $VersionFile = Join-Path $ToolsDirectory "chrome-version.txt"
 
+function Test-GoogleSignedChromeDriver {
+  param([string]$Path)
+
+  if (-not (Test-Path -LiteralPath $Path)) { return $false }
+
+  try {
+    $Signature = Get-AuthenticodeSignature -FilePath $Path -ErrorAction Stop
+    return $Signature.Status -eq "Valid" -and
+      $Signature.SignerCertificate.Subject -match "Google LLC"
+  }
+  catch {
+    return $false
+  }
+}
+
 if ((Test-Path -LiteralPath $DriverPath) -and
     (Test-Path -LiteralPath $VersionFile) -and
     ((Get-Content -LiteralPath $VersionFile -Raw).Trim() -eq $ChromeVersion)) {
-  Write-Host "ChromeDriver already matches Chrome $ChromeVersion"
-  exit 0
+  if (Test-GoogleSignedChromeDriver -Path $DriverPath) {
+    Write-Host "ChromeDriver already matches Chrome $ChromeVersion and has a valid Google signature"
+    exit 0
+  }
+
+  Write-Warning "Cached ChromeDriver failed signature validation and will be replaced."
+  Remove-Item -LiteralPath $DriverDirectory -Recurse -Force
+  Remove-Item -LiteralPath $VersionFile -Force
 }
 
 $MetadataUrl = "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json"
@@ -50,8 +71,7 @@ try {
   Invoke-WebRequest -Uri $DriverDownload.url -OutFile $ArchivePath
   Expand-Archive -LiteralPath $ArchivePath -DestinationPath $ToolsDirectory -Force
 
-  $Signature = Get-AuthenticodeSignature -FilePath $DriverPath
-  if ($Signature.Status -ne "Valid" -or $Signature.SignerCertificate.Subject -notmatch "Google LLC") {
+  if (-not (Test-GoogleSignedChromeDriver -Path $DriverPath)) {
     throw "Downloaded ChromeDriver did not have a valid Google LLC code-signing signature."
   }
 }
